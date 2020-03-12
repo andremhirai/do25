@@ -2,6 +2,13 @@ pipeline {
     agent any
 
     stages{
+        stage("Slack - mensagem deploy iniciando"){
+                steps{
+                       script{
+                                slackSend(color: "yellow", message:"[DEPLOY INICIANDO] Para visualizar este job clique aqui: ${JOB_URL}", channel: "devops-andre")
+                            }
+                        }
+                    }
         stage("limpando a workspace"){
             steps{
                 sh 'pwd'
@@ -38,14 +45,23 @@ pipeline {
             }
         }
 
-        stage(Deploy){
+        stage("processo de deploy"){
             steps{
                 sh 'scp -o StrictHostKeyChecking=no -i /home/vagrant/jenkins target/alura-forum-0.0.1-SNAPSHOT.war vagrant@192.168.1.222:/home/vagrant/alura-forum-0.0.1-SNAPSHOT.war'
                 sh "ssh -o StrictHostKeyChecking=no -i /home/vagrant/jenkins vagrant@192.168.1.222 'sudo mv /home/vagrant/alura-forum-0.0.1-SNAPSHOT.war /var/lib/tomcat8/webapps/alura-forum-0.0.1-SNAPSHOT.war'"
             }
         }
 
+        stage("Slack - mensagem deploy finalizado"){
+                    steps{
+                        script{
+                            slackSend(color: "green", message:"[DEPLOY FINALIZADO] Para visualizar este job clique aqui: ${JOB_URL}", channel: "devops-andre")
+                        }
+                    }
+                }
+
 
     }
+
 
 }
