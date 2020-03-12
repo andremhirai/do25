@@ -34,17 +34,6 @@ pipeline {
             }
         }
 
-        stage("Solicitar autorizacao de deploy"){
-            steps{
-                script{
-                    slackSend(color: "purple", message:"Para aprovar este deploy clique aqui: ${JOB_URL} - [JANELA DE 5 MINUTOS]", channel: "devops-andre")
-                    timeout(time: 5, unit: "MINUTES") {
-                        input(id: "Deploy Decision", message: "Voce quer aprovar o deploy?", ok: "Deploy")
-                    }
-                }
-            }
-        }
-
         stage("processo de deploy"){
             steps{
                 sh 'scp -o StrictHostKeyChecking=no -i /home/vagrant/jenkins target/alura-forum-0.0.1-SNAPSHOT.war vagrant@192.168.1.222:/home/vagrant/alura-forum-0.0.1-SNAPSHOT.war'
